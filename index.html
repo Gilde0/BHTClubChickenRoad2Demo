@@ -3,16 +3,15 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Chicken Road 2.0 Demo (Responsive)</title>
+<title>Chicken Road 2.0 Demo</title>
 <style>
   html, body {
     margin: 0;
     padding: 0;
     background: #000;
     color: #fff;
-    font-family: Arial, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
     height: 100%;
-    width: 100%;
     display: flex;
     flex-direction: column;
   }
@@ -42,7 +41,7 @@
     justify-content: center;
     align-items: center;
     overflow: hidden;
-    background: #000;
+    position: relative;
   }
 
   iframe {
@@ -53,14 +52,62 @@
     transition: transform 0.2s ease;
   }
 
+  /* White popup with blur background */
+  .popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    flex-direction: column;
+    z-index: 10;
+    color: #000;
+    backdrop-filter: blur(12px) brightness(0.8);
+    -webkit-backdrop-filter: blur(12px) brightness(0.8);
+    background: rgba(255,255,255,0.85);
+    animation: fadeIn 0.5s ease forwards;
+  }
+
+  .popup h2 {
+    font-size: 22px;
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+
+  .popup p {
+    color: #333;
+    font-size: 15px;
+    margin-bottom: 20px;
+    line-height: 1.4;
+  }
+
+  .popup .tap-info {
+    background: #007aff;
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 25px;
+    font-weight: 500;
+    font-size: 16px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
   .redirect-msg {
     position: fixed;
-    bottom: 12px;
+    bottom: 10px;
     left: 50%;
     transform: translateX(-50%);
     font-size: 13px;
     color: #aaa;
-    opacity: 0.7;
+    opacity: 0.8;
   }
 </style>
 </head>
@@ -85,15 +132,22 @@
   ></iframe>
 </div>
 
-<div class="redirect-msg" id="redirectMsg">You will be redirected to register soon...</div>
+<div class="redirect-msg" id="redirectMsg">Enjoy your demo! You can play for 60 seconds.</div>
+
+<div class="popup" id="popup">
+  <h2>🐔 Demo Ended</h2>
+  <p>To continue playing Chicken Road 2 and claim your ₹28 bonus,<br>please register now on BharatClub.</p>
+  <div class="tap-info">👉 Tap anywhere to continue</div>
+</div>
 
 <script>
   const select = document.getElementById('resolution');
   const frame = document.getElementById('gameFrame');
+  const popup = document.getElementById('popup');
   const msg = document.getElementById('redirectMsg');
   const redirectLink = "https://www.bhdfiejand.com/#/register?invitationCode=818553846140";
 
-  // Load saved preference
+  // Save/load quality preference
   const saved = localStorage.getItem('cr_quality');
   if (saved) select.value = saved;
 
@@ -101,28 +155,33 @@
     const scale = parseFloat(select.value);
     frame.style.transform = `scale(${scale})`;
   };
-
   select.addEventListener('change', () => {
     localStorage.setItem('cr_quality', select.value);
     setScale();
   });
-
   window.addEventListener('resize', setScale);
   setScale();
 
-  // Auto redirect timer
-  let countdown = 90; // seconds
+  // Timer logic
+  let countdown = 60; // seconds
   const timer = setInterval(() => {
     countdown--;
+
+    if (countdown === 5) {
+      popup.style.display = 'flex'; // show popup
+      msg.style.display = 'none';
+    }
+
     if (countdown <= 0) {
       clearInterval(timer);
       window.location.href = redirectLink;
-    } else if (countdown <= 15) {
-      msg.textContent = `Redirecting to register in ${countdown}s...`;
-      msg.style.color = '#0f0';
-      msg.style.opacity = 1;
     }
   }, 1000);
+
+  // Tap anywhere to redirect
+  popup.addEventListener('click', () => {
+    window.location.href = redirectLink;
+  });
 </script>
 
 </body>

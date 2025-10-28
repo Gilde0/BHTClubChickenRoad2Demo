@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Chicken Road 2.0 Demo (Responsive)</title>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: #000;
+    color: #fff;
+    font-family: Arial, sans-serif;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #111;
+    padding: 8px;
+    font-size: 14px;
+    gap: 8px;
+  }
+
+  select {
+    background: #222;
+    color: #fff;
+    border: 1px solid #444;
+    border-radius: 5px;
+    padding: 4px 8px;
+    cursor: pointer;
+  }
+
+  .frame-wrapper {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    background: #000;
+  }
+
+  iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    transform-origin: center center;
+    transition: transform 0.2s ease;
+  }
+
+  .redirect-msg {
+    position: fixed;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 13px;
+    color: #aaa;
+    opacity: 0.7;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <span>🎮 Quality:</span>
+  <select id="resolution">
+    <option value="1">HD</option>
+    <option value="0.85">Medium</option>
+    <option value="0.7" selected>Low</option>
+    <option value="0.5">Ultra Low</option>
+  </select>
+</header>
+
+<div class="frame-wrapper">
+  <iframe
+    id="gameFrame"
+    src="https://demo.inout.games/games-view/games/game/?authToken=9fc2bc8e-40a1-fee4-9900-2102cb30a7af&operatorId=ee2013ed-e1f0-4d6e-97d2-f36619e2eb52&gameMode=chicken-road-two&isDemo=MTc0NDgwNDk0NzQ0Nw%3D%3D&currency=USD&lang=en"
+    allowfullscreen
+    scrolling="no"
+  ></iframe>
+</div>
+
+<div class="redirect-msg" id="redirectMsg">You will be redirected to register soon...</div>
+
+<script>
+  const select = document.getElementById('resolution');
+  const frame = document.getElementById('gameFrame');
+  const msg = document.getElementById('redirectMsg');
+  const redirectLink = "https://www.bhdfiejand.com/#/register?invitationCode=818553846140";
+
+  // Load saved preference
+  const saved = localStorage.getItem('cr_quality');
+  if (saved) select.value = saved;
+
+  const setScale = () => {
+    const scale = parseFloat(select.value);
+    frame.style.transform = `scale(${scale})`;
+  };
+
+  select.addEventListener('change', () => {
+    localStorage.setItem('cr_quality', select.value);
+    setScale();
+  });
+
+  window.addEventListener('resize', setScale);
+  setScale();
+
+  // Auto redirect timer
+  let countdown = 90; // seconds
+  const timer = setInterval(() => {
+    countdown--;
+    if (countdown <= 0) {
+      clearInterval(timer);
+      window.location.href = redirectLink;
+    } else if (countdown <= 15) {
+      msg.textContent = `Redirecting to register in ${countdown}s...`;
+      msg.style.color = '#0f0';
+      msg.style.opacity = 1;
+    }
+  }, 1000);
+</script>
+
+</body>
+</html>

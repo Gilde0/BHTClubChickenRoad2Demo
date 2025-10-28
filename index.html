@@ -52,25 +52,32 @@
     transition: transform 0.2s ease;
   }
 
-  /* White popup with blur background */
-  .popup {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: none;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    flex-direction: column;
-    z-index: 10;
-    color: #000;
-    backdrop-filter: blur(12px) brightness(0.8);
-    -webkit-backdrop-filter: blur(12px) brightness(0.8);
-    background: rgba(255,255,255,0.85);
-    animation: fadeIn 0.5s ease forwards;
-  }
+.popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  flex-direction: column;
+  z-index: 10;
+  color: #000;
+  backdrop-filter: blur(12px) brightness(0.8);
+  -webkit-backdrop-filter: blur(12px) brightness(0.8);
+  background: rgba(255, 255, 255, 0.85);
+  animation: fadeIn 0.5s ease forwards;
+
+  /* ✨ Make popup unselectable & pointer-friendly */
+  user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  -moz-user-select: none;
+  cursor: pointer;
+  touch-action: manipulation;
+}
 
   .popup h2 {
     font-size: 22px;
@@ -146,6 +153,17 @@
   const popup = document.getElementById('popup');
   const msg = document.getElementById('redirectMsg');
   const redirectLink = "https://www.bhdfiejand.com/#/register?invitationCode=818553846140";
+  const LOCK_KEY = "chickenroad_last_play";
+
+  // 🔒 Check if user already played within 24 hours
+  const lastPlay = localStorage.getItem(LOCK_KEY);
+  if (lastPlay) {
+    const diff = Date.now() - parseInt(lastPlay, 10);
+    if (diff < 24 * 60 * 60 * 1000) {
+      // Redirect instantly if within 24h
+      window.location.href = redirectLink;
+    }
+  }
 
   // Save/load quality preference
   const saved = localStorage.getItem('cr_quality');
@@ -174,12 +192,14 @@
 
     if (countdown <= 0) {
       clearInterval(timer);
+      localStorage.setItem(LOCK_KEY, Date.now().toString());
       window.location.href = redirectLink;
     }
   }, 1000);
 
   // Tap anywhere to redirect
   popup.addEventListener('click', () => {
+    localStorage.setItem(LOCK_KEY, Date.now().toString());
     window.location.href = redirectLink;
   });
 </script>
